@@ -13,6 +13,7 @@ import (
 	http "github.com/useflyent/fhttp"
 )
 
+// Structs
 type HeartbeatInterval struct {
 	HeartbeatInterval int32 `json:"heartbeat_interval"`
 }
@@ -37,6 +38,7 @@ type Client struct {
 	Ws   *websocket.Conn
 }
 
+// Class Methods
 func (c *Client) heartbeat(ms int32, ws *websocket.Conn) {
 	payload := WSPayload{Op: 1, Data: nil}
 
@@ -127,23 +129,27 @@ func main() {
 					case "MESSAGE_CREATE":
 						var msg MessagePayload
 						convert(payload.Data, &msg)
+
+						// This if statements entire job is to redeem codes once its found a possible code
 						if strings.Contains(msg.Content, "discord.gift/") {
 							code := strings.Split(msg.Content, "discord.gift/")
 							if len(code[1]) >= 16 {
 								httpClient := &http.Client{}
 
-								req, _ := http.NewRequest("POST", "https://discord.com/api/v9/entitlements/gift-codes/"+code[1][0:15]+"/redeem", nil)
+								req, _ := http.NewRequest("POST", "https://discord.com/api/v9/entitlements/gift-codes/"+code[1][0:16]+"/redeem", nil)
 								req.Header.Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
 								req.Header.Set("authorization", "Mjg4Njk1MzQ0ODYxMDIwMTYw.YlGRdQ.-nHHh8rnAed6Wo_LgjYAp9gJNKw")
 
 								resp, err := httpClient.Do(req)
 
+								// Error handling for if the redeem goes bad
 								if err != nil {
 									log.Println("err: ", err)
 								}
 								if resp.StatusCode != 200 {
 									log.Println("Failed Redeem")
 								} else {
+									//insert queing system here
 									log.Println("Successful redeem")
 								}
 							}
@@ -153,7 +159,6 @@ func main() {
 						println("READY: ", line)
 						break
 					}
-					break
 				}
 			}
 		}()
