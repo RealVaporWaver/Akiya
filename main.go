@@ -79,11 +79,12 @@ func (c *Client) readMessage() WSPayload {
 		log.Println("read:", err)
 		if strings.Contains(err.Error(), "1001") {
 			c.dial()
-			c.write(2, IdentifyPayload{Token: c.Token, SuperProperties: map[string]interface{}{
+			// this is omitted because i think iLinked lied and its not necessary
+			/*c.write(2, IdentifyPayload{Token: c.Token, SuperProperties: map[string]interface{}{
 				"$os":      "windows",
 				"$browser": "brave",
 				"$device":  "brave",
-			}})
+			}})*/
 		}
 	}
 
