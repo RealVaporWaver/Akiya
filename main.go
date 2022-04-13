@@ -35,8 +35,9 @@ type IdentifyPayload struct {
 }
 
 type Client struct {
-	Lock sync.Mutex
-	Ws   *websocket.Conn
+	Lock  sync.Mutex
+	Ws    *websocket.Conn
+	Token string
 }
 
 // Class Methods
@@ -76,6 +77,12 @@ func (c *Client) readMessage() WSPayload {
 	_, message, err := c.Ws.ReadMessage()
 	if err != nil {
 		log.Println("read:", err)
+		c.dial()
+		c.write(2, IdentifyPayload{Token: c.Token, SuperProperties: map[string]interface{}{
+			"$os":      "windows",
+			"$browser": "brave",
+			"$device":  "brave",
+		}})
 	}
 
 	payload := WSPayload{}
@@ -108,7 +115,7 @@ func main() {
 		line := scanner.Text()
 
 		go func() {
-			client := Client{}
+			client := Client{Token: line}
 			client.dial()
 
 			for {
@@ -162,6 +169,7 @@ func main() {
 						println("READY: ", line)
 						break
 					}
+
 				}
 			}
 		}()
