@@ -77,12 +77,14 @@ func (c *Client) readMessage() WSPayload {
 	_, message, err := c.Ws.ReadMessage()
 	if err != nil {
 		log.Println("read:", err)
-		c.dial()
-		c.write(2, IdentifyPayload{Token: c.Token, SuperProperties: map[string]interface{}{
-			"$os":      "windows",
-			"$browser": "brave",
-			"$device":  "brave",
-		}})
+		if strings.Contains(err.Error(), "1001") {
+			c.dial()
+			c.write(2, IdentifyPayload{Token: c.Token, SuperProperties: map[string]interface{}{
+				"$os":      "windows",
+				"$browser": "brave",
+				"$device":  "brave",
+			}})
+		}
 	}
 
 	payload := WSPayload{}
