@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	discordBot "github.com/Oddernumse/akiya/discordbot"
 	"github.com/gorilla/websocket"
 	http "github.com/useflyent/fhttp"
 )
@@ -108,7 +107,7 @@ func (c *Client) write(op int32, data interface{}) {
 //------------------------------------
 
 func main() {
-	discordBot.Connect()
+	//discordBot.Connect()
 
 	f, _ := os.Open("bot_tokens.txt")
 
