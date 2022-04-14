@@ -84,6 +84,8 @@ func (c *Client) readMessage() WSPayload {
 				"$browser": "brave",
 				"$device":  "brave",
 			}})*/
+		} else if strings.Contains(err.Error(), "EOF") {
+			c.dial()
 		}
 	}
 
