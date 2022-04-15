@@ -76,17 +76,18 @@ func (c *Client) readMessage() WSPayload {
 	_, message, err := c.Ws.ReadMessage()
 	if err != nil {
 		log.Println("read:", err)
-		if strings.Contains(err.Error(), "1001") {
+		/*if strings.Contains(err.Error(), "1001") {
 			c.dial()
 			// this is omitted because i think iLinked lied and its not necessary
 			/*c.write(2, IdentifyPayload{Token: c.Token, SuperProperties: map[string]interface{}{
 				"$os":      "windows",
 				"$browser": "brave",
 				"$device":  "brave",
-			}})*/
+			}})
 		} else if strings.Contains(err.Error(), "EOF") {
 			c.dial()
-		}
+		}*/
+		c.dial()
 	}
 
 	payload := WSPayload{}
