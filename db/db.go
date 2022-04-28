@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/uptrace/bun"
@@ -16,9 +17,16 @@ type Customer struct {
 	Token  string `bun:"token,notnull"`
 	Unix   int    `bun:"unix_timestamp,notnull"`
 	Amount int    `bun:"amount,notnull"`
+	Userid string `bun:"customer_id,pk"`
 }
 
-func Open() *bun.DB {
+type Table struct {
+	Db *bun.DB
+}
+
+var DbClient *bun.DB
+
+func Open() {
 	sqldb, err := sql.Open("postgres", "postgres://postgres:horsemanshoe@localhost:5432/akiya?sslmode=disable")
 	if err != nil {
 		log.Panic(err)
@@ -26,19 +34,32 @@ func Open() *bun.DB {
 
 	db := bun.NewDB(sqldb, pgdialect.New())
 
-	return db
+	DbClient = db
 }
 
-func Insert(db *bun.DB) {
+func CreateCustomer(userid string, usertoken string) {
 
 	ctx := context.Background()
 
-	customer := &Customer{Token: "aaaaaaaaaaaaaaaa", Unix: 9000000, Amount: 34}
-	_, err := db.NewInsert().Model(customer).Exec(ctx)
+	customer := &Customer{Token: usertoken, Userid: userid}
+	_, err := DbClient.NewInsert().Model(customer).Exec(ctx)
+
+	if err != nil {
+		log.Panic("err: ", err)
+	}
+}
+
+func CreateOrder(quantity int, userid string) {
+	ctx := context.Background()
+
+	order := &Customer{Userid: userid, Amount: quantity}
+	orderTime := &Customer{Unix: int(time.Now().Unix())}
+	_, err := DbClient.NewUpdate().Model(order).Column("amount").WherePK().Exec(ctx)
+	DbClient.NewUpdate().Model(orderTime).Column("unix_timestamp").WherePK().Exec(ctx)
 
 	if err != nil {
 		log.Panic("err: ", err)
 	}
 
-	println("Successfully Added Customer")
+	println("successfully updated")
 }
