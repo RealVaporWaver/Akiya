@@ -71,7 +71,6 @@ func CreateCommands(dg *discordgo.Session) {
 		}
 		registeredCommands[i] = cmd
 	}
-
 }
 
 var (
@@ -99,23 +98,23 @@ var (
 					Required:    true,
 					Choices: []*discordgo.ApplicationCommandOptionChoice{
 						{
-							Name:  "bitcoin",
+							Name:  "Bitcoin",
 							Value: "bitcoin",
 						},
 						{
-							Name:  "litecoin",
+							Name:  "Litecoin",
 							Value: "litecoin",
 						},
 						{
-							Name:  "monero",
+							Name:  "Monero",
 							Value: "monero",
 						},
 						{
-							Name:  "ethereum",
+							Name:  "Ethereum",
 							Value: "ethereum",
 						},
 						{
-							Name:  "paypal",
+							Name:  "Paypal",
 							Value: "paypal",
 						},
 					},
@@ -149,10 +148,14 @@ var (
 				},
 			})
 			options := i.ApplicationCommandData().Options
-			db.CreateCustomer(i.Interaction.Member.User.ID, options[0].StringValue())
+
+			if db.GetUser(i.Interaction.User.ID).Userid == i.Interaction.User.ID {
+				db.UpdateCustomer(i.Interaction.User.ID, options[0].StringValue())
+			} else {
+				db.CreateCustomer(i.Interaction.Member.User.ID, options[0].StringValue())
+			}
 
 			s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{Content: "Added Account"})
-
 		},
 		"buy": func(s *discordgo.Session, i *discordgo.InteractionCreate) {
 			s.InteractionRespond(i.Interaction, &discordgo.InteractionResponse{
@@ -182,7 +185,7 @@ var (
 			json.Unmarshal([]byte(processed), &BuyUrl)
 
 			if options[0].StringValue() == "bitcoin" {
-				s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{Content: "Bitcoin order needs to be more than 3.5$"})
+				s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{Content: "Bitcoin orders need to be more than 3.5$"})
 
 			} else {
 				s.FollowupMessageCreate(s.State.User.ID, i.Interaction, false, &discordgo.WebhookParams{Content: "Payment Created! " + BuyUrl.Data.Url})

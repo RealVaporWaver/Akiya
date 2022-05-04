@@ -20,11 +20,8 @@ type Customer struct {
 	Userid string `bun:"customer_id,pk"`
 }
 
-type Table struct {
-	Db *bun.DB
-}
-
 var DbClient *bun.DB
+var Ctx context.Context
 
 func Open() {
 	sqldb, err := sql.Open("postgres", "postgres://postgres:horsemanshoe@localhost:5432/akiya?sslmode=disable")
@@ -35,14 +32,13 @@ func Open() {
 	db := bun.NewDB(sqldb, pgdialect.New())
 
 	DbClient = db
+	Ctx = context.Background()
 }
 
 func CreateCustomer(userid string, usertoken string) {
 
-	ctx := context.Background()
-
-	customer := &Customer{Token: usertoken, Userid: userid}
-	_, err := DbClient.NewInsert().Model(customer).Exec(ctx)
+	customer := &Customer{Token: usertoken, Userid: userid, Unix: int(time.Now().UTC().Unix())}
+	_, err := DbClient.NewInsert().Model(customer).Exec(Ctx)
 
 	if err != nil {
 		log.Panic("err: ", err)
@@ -50,16 +46,25 @@ func CreateCustomer(userid string, usertoken string) {
 }
 
 func CreateOrder(quantity int, userid string) {
-	ctx := context.Background()
 
 	order := &Customer{Userid: userid, Amount: quantity}
 	orderTime := &Customer{Unix: int(time.Now().Unix())}
-	_, err := DbClient.NewUpdate().Model(order).Column("amount").WherePK().Exec(ctx)
-	DbClient.NewUpdate().Model(orderTime).Column("unix_timestamp").WherePK().Exec(ctx)
+	_, err := DbClient.NewUpdate().Model(order).Column("amount").WherePK().Exec(Ctx)
+	DbClient.NewUpdate().Model(orderTime).Column("unix_timestamp").WherePK().Exec(Ctx)
 
 	if err != nil {
 		log.Panic("err: ", err)
 	}
+}
 
-	println("successfully updated")
+func GetUser(userid string) Customer {
+	var customer Customer
+	DbClient.NewSelect().Model(&customer).Where("customer_id = ?", userid).Scan(Ctx)
+
+	return customer
+}
+
+func UpdateCustomer(userid string, token string) {
+	test := &Customer{Userid: userid, Token: token}
+	DbClient.NewUpdate().Model(test).Column("token").Exec(Ctx)
 }
