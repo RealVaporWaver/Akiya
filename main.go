@@ -146,7 +146,7 @@ func main() {
 
 								req, _ := http.NewRequest("POST", "https://discord.com/api/v9/entitlements/gift-codes/"+code[1][0:16]+"/redeem", nil)
 								req.Header.Set("user-agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
-								req.Header.Set("authorization", "Mjg4Njk1MzQ0ODYxMDIwMTYw.YlGRdQ.-nHHh8rnAed6Wo_LgjYAp9gJNKw")
+								req.Header.Set("authorization", "")
 
 								resp, err := httpClient.Do(req)
 
