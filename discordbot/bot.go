@@ -38,7 +38,7 @@ var Discord *discordgo.Session
 
 func Connect() *discordgo.Session {
 	var err error
-	Discord, err = discordgo.New("Bot " + "OTYyNjg0OTE1NjMwMTA0NjI2.YlLIMQ.Mr8A8xO02cyjNyGupTsrn7H_6vE")
+	Discord, err = discordgo.New("Bot " + "")
 	if err != nil {
 		log.Panic("err: ", err)
 	}
