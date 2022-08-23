@@ -1,5 +1,5 @@
 # Akiya
-This is eventually gonna be a nitro sniping service, yessir
+This is just a lil thingamabob
 
 
 ✱--------------------------------------------------✱
